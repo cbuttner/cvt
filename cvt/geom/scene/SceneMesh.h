@@ -27,6 +27,7 @@
 
 #include <cvt/util/SIMD.h>
 #include <cvt/geom/scene/SceneGeometry.h>
+#include <cvt/geom/Sphere.h>
 
 #include <vector>
 
@@ -72,6 +73,7 @@ namespace cvt {
 
 			Vector3f			centroid() const;
 			Boxf				boundingBox() const;
+			Spheref				boundingSphere() const;
 
 			void				transform( const Matrix3f& mat );
 			void				transform( const Matrix4f& mat );
@@ -258,6 +260,33 @@ namespace cvt {
 		}
 		bbox.set( min, max );
 		return bbox;
+	}
+
+	inline Spheref SceneMesh::boundingSphere() const
+	{
+		// Roughly approximated bounding sphere, could use a better algorithm
+		const Boxf bbox = boundingBox();
+
+		Vector3f pos, size;
+		bbox.getPosition( pos );
+		bbox.getSize( size );
+		const Vector3f center = pos + size / 2.0f;
+
+		float maxLength = 0.0f;
+
+		if( !_vindices.size() )
+			return Spheref();
+
+		for ( int i = 0; i < _vertices.size(); ++i )
+		{
+			const float length = ( _vertices[ i ] - center ).length();
+			if ( length > maxLength )
+			{
+				maxLength = length;
+			}
+		}
+
+		return Spheref( center, maxLength );
 	}
 
 	inline void SceneMesh::translate( const Vector3f& translation )
