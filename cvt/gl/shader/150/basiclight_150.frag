@@ -32,6 +32,6 @@ out vec4 Output;
 
 void main()
 {
-    float intensity = abs( dot( normalize( LIGHTPOS ), vtx_Normal ) );
-    Output = vec4( vtx_Color.xyz * intensity, vtx_Color.w );
+	float intensity = max( dot( normalize( LIGHTPOS ), vtx_Normal ), 0.0f );
+	Output = vec4( vtx_Color.xyz * intensity, vtx_Color.w );
 }

@@ -31,6 +31,6 @@ varying vec3  vtx_Normal;
 
 void main()
 {
-    float intensity  = abs( dot( normalize( LIGHTPOS ), normalize( vtx_Normal ) ) );
+	float intensity = max( dot( normalize( LIGHTPOS ), normalize( vtx_Normal ) ), 0.0f );
 	gl_FragColor = vec4( vtx_Color.xyz * intensity, vtx_Color.w );
 }
