@@ -281,4 +281,26 @@ namespace cvt {
 		mat[ 1 ][ 1 ] = ( float ) h / ( float ) viewportheight;
 		mat[ 1 ][ 2 ] = ( -2.0f * ( float ) y - ( float ) h + ( float ) viewportheight ) / ( float ) viewportheight;
 	}
+
+	void GL::lookAt( Matrix4f& mat, const Vector3f& eye, const Vector3f& center, const Vector3f& up )
+	{
+		Vector3f f = center - eye;
+		f.normalize();
+
+		Vector3f s = f.cross( up );
+		s.normalize();
+		Vector3f u = s.cross( f );
+		u.normalize();
+
+		mat[ 0 ].set(  s.x,  s.y,  s.z,  0.0f );
+		mat[ 1 ].set(  u.x,  u.y,  u.z,  0.0f );
+		mat[ 2 ].set( -f.x, -f.y, -f.z,  0.0f );
+		mat[ 3 ].set( 0.0f, 0.0f, 0.0f,  1.0f );
+
+		Matrix4f translation;
+		translation.setIdentity();
+		translation.setTranslation( -eye.x, -eye.y, -eye.z );
+
+		mat = mat * translation;
+	}
 }

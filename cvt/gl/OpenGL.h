@@ -94,6 +94,7 @@ namespace cvt {
 			static void frustum( Matrix4f& mat, float left, float right, float top, float bottom, float near, float far, bool fliph = false );
 			static void perspective( Matrix4f& mat, float fovy, float aspect, float near, float far, bool fliph = false );
 			static void subviewport( Matrix4f& mat, int x, int y, int width, int height, int viewportwidth, int viewportheight );
+			static void lookAt( Matrix4f& mat, const Vector3f& eye, const Vector3f& center, const Vector3f& up );
 
 		private:
 			static void init();
