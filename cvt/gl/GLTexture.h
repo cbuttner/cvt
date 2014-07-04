@@ -51,7 +51,7 @@ namespace cvt {
 			void alloc( const Image& img, bool copy = true );
 			void setData( GLint	xoffset, GLint yoffset,	GLsizei	width, GLsizei height, GLenum format, GLenum type, const GLvoid* data, size_t stride = 0 );
 //			void setData( const GLBuffer& buffer, GLint	xoffset, GLint yoffset,	GLsizei	width, GLsizei height, GLenum format, GLenum type, const GLvoid* data, size_t stride = 0 );
-			void toImage( Image& img, IFormatType itype = IFORMAT_TYPE_UINT8  ) const;
+			void toImage( Image& img, const IFormat& format, bool fromDepth = false ) const;
 
 		private:
 			GLTexture( const GLTexture& );
