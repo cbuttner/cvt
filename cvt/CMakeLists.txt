@@ -211,6 +211,7 @@ SET( CVT_HEADERS
    geom/PointSet.h
    geom/QBezier.h
    geom/Rect.h
+   geom/Sphere.h
    geom/scene/Scene.h
    geom/scene/SceneCamera.h
    geom/scene/SceneGeometry.h
