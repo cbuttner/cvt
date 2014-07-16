@@ -410,6 +410,50 @@ namespace cvt {
 		}
 	}
 
+	void Image::absDiff( const Image& i )
+	{
+		if( _mem->_width != i._mem->_width ||
+			_mem->_height != i._mem->_height ||
+			_mem->_format != i._mem->_format )
+			throw CVTException("Image mismatch");
+
+		//SIMD* simd = SIMD::instance();
+		switch( _mem->_format.type ) {
+			case IFORMAT_TYPE_FLOAT:
+				{
+					IMapScoped<const float> srcmap1( i );
+					IMapScoped<const float> srcmap2( *this );
+					IMapScoped<float> dstmap( *this );
+
+					// No SIMD implementation yet
+					size_t h = height();
+					while ( h-- )
+					{
+						const float* src1 = srcmap1.ptr();
+						const float* src2 = srcmap2.ptr();
+						float* dst = dstmap.ptr();
+
+						size_t w = width() * _mem->_format.channels;
+						while ( w-- )
+						{
+							*dst = ( *src1 > *src2 ) ? ( *src1 - *src2 ) : ( *src2 - *src1 );
+							src1++;
+							src2++;
+							dst++;
+						}
+
+						srcmap1++;
+						srcmap2++;
+						dstmap++;
+					}
+				}
+				break;
+			default:
+				throw CVTException("Unimplemented");
+
+		}
+	}
+
 	float Image::ssd( const Image& i ) const
 	{
 		if( _mem->_width != i._mem->_width ||

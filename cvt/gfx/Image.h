@@ -111,6 +111,8 @@ namespace cvt {
 			void mul( const Image& i );
 			void mad( const Image& i, float alpha = 1.0f );
 
+			void absDiff( const Image& i );
+
 			float ssd( const Image& i ) const;
 			float sad( const Image& i ) const;
 
