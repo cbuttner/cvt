@@ -76,6 +76,10 @@ namespace cvt
             void integralImage( ImagePyramid& out ) const;
             void boxfilter( ImagePyramid& out, size_t hradius, size_t vradius = 0 ) const;
 
+            void laplacian( ImagePyramid& out ) const;
+            void upsample( ImagePyramid& out, const IScaleFilter& sfilter = IScaleFilterGauss() ) const;
+            void collapse( const float* weights );
+
         private:
             std::vector<Image>       _image;
             float                    _scaleFactor;
@@ -209,6 +213,52 @@ namespace cvt
         for( size_t i = 0; i < _image.size(); i++ ){
             _image[ i ].boxfilter( out[ i ], hradius, vradius );
         }
+    }
+
+    inline void ImagePyramid::laplacian( ImagePyramid& out ) const
+    {
+        for( size_t i = 0; i < _image.size() - 1; i++ ) {
+            out[ i ].reallocate( _image[ i ] );
+
+            Image upsampled;
+            const size_t width = _image[ i ].width();
+            const size_t height = _image[ i ].height();
+            _image[ i + 1 ].scale( upsampled, width, height, IScaleFilterGauss() );
+
+            out[ i ] = Image( _image[ i ] );
+            out[ i ].absDiff( upsampled );
+        }
+    }
+
+    inline void ImagePyramid::upsample( ImagePyramid& out, const IScaleFilter& sfilter ) const
+    {
+        for( size_t i = 0; i < _image.size() - 1; i++ ) {
+            out[ i ].reallocate( _image[ i ] );
+
+            const size_t width = _image[ i ].width();
+            const size_t height = _image[ i ].height();
+            _image[ i + 1 ].scale( out[ i ], width, height, sfilter );
+        }
+    }
+
+    inline void ImagePyramid::collapse( const float* weights )
+    {
+        for( size_t i = 0; i < _image.size() - 1; i++ ) {
+            const float weight = weights[ i ];
+            _image[ i ].mul( weight );
+        }
+
+        size_t level = _image.size();
+        while ( level-- > 1 ) {
+            const size_t width = _image[ level - 1 ].width();
+            const size_t height = _image[ level - 1 ].height();
+            Image upsampled;
+            _image[ level ].scale( upsampled, width, height, IScaleFilterGauss() );
+
+            _image[ level - 1 ].add( upsampled );
+        }
+
+        _image.resize( 1 );
     }
     
     static inline std::ostream& operator<<( std::ostream& out, const ImagePyramid &p)
